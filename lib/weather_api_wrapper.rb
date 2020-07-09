@@ -9,6 +9,14 @@ class WeatherApiWrapper
     response = RestClient.get("#{BASE_URL}/points/#{lat},#{long}")
     response_hash = JSON.parse(response)
 
-    response_hash["properties"].slice("gridId", "gridX", "gridY", "forecast").transform_keys!(&:to_sym)
+    response_hash["properties"].slice("gridId", "gridX", "gridY").transform_keys!(&:to_sym)
+  end
+
+  def get_forecast(gridId:, gridX:, gridY:)
+    response = RestClient.get(
+      "#{BASE_URL}/gridpoints/#{gridId}/#{gridX},#{gridY}/forecast"
+    )
+    response_hash = JSON.parse(response)
+    response_hash["properties"]["periods"]
   end
 end

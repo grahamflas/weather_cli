@@ -13,7 +13,7 @@ class WeatherCLI
     read_locations
     self.locations = to_lat_long(raw_locations)
     add_grid_office_to_locations_hash
-    # add_forecast_to_locations_hash
+    add_forecast_to_locations_hash
     binding.pry
   end
 
@@ -47,19 +47,27 @@ class WeatherCLI
 
   def add_grid_office_to_locations_hash
     self.locations.map! do |location|
-      office_and_grid = @api_wrapper.get_grid(
+      office_and_grid_hash = @api_wrapper.get_grid(
         lat: location[:lat], 
         long: location[:long],
       )
       
-      location.merge(office_and_grid)
+      location.merge(office_and_grid_hash)
     end
   end
 
-  # def add_forecast_to_locations_hash
-  #   self.locations.map! do location
-  #     with_forecast = @api_wrapper.get_forecast(location[])
-  #   end
-  # end
+  def add_forecast_to_locations_hash
+    self.locations.map! do |location|
+      forecast_array = @api_wrapper.get_forecast(
+        gridId: location[:gridId],
+        gridX: location[:gridX],
+        gridY: location[:gridY],
+      )
+      
+      forecast_array.each {|el| el.transform_keys!(&:to_sym)}
+      
+      location.merge({:forecast_details => forecast_array})
+    end
+  end
 
 end
