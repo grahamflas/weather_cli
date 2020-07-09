@@ -30,10 +30,12 @@ class WeatherCLI
 
   def clean_coordinates(coordinate)
     clean_coordinate = coordinate[0..6]
-      if coordinate.end_with?("S", "s", "W", "w")
-        clean_coordinate.prepend("-") 
-      end
-      clean_coordinate
+    
+    if coordinate.end_with?("S", "s", "W", "w")
+      clean_coordinate.prepend("-") 
+    end
+    
+    clean_coordinate
   end
 
 end
