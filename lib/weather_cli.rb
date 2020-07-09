@@ -6,20 +6,22 @@ class WeatherCLI
   def initialize
     @raw_locations = []
     @locations = []
+    @api_wrapper = WeatherApiWrapper.new
   end
 
   def run
     read_locations
-    locations = to_lat_long(raw_locations)
+    self.locations = to_lat_long(raw_locations)
+    add_grid_office_to_locations
     binding.pry
   end
 
   def read_locations
-    File.foreach(ARGV.first) {|line| raw_locations << line.chomp }
+    File.foreach(ARGV.first) {|line| self.raw_locations << line.chomp }
   end
 
   def to_lat_long(raw_locations)
-    raw_locations.map do |location|
+    self.raw_locations.map do |location|
       coordinates = location.split(",").each {|coordinate| coordinate.strip!}
 
       coordinates_hash = {}
@@ -40,6 +42,14 @@ class WeatherCLI
     end
 
     clean_coordinate
+  end
+
+  def add_grid_office_to_locations
+    self.locations.map! do |location|
+      office_and_grid = @api_wrapper.get_grid(location[:lat], location[:long])
+      
+      location.merge(office_and_grid)
+    end
   end
 
 end
