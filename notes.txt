@@ -1,0 +1,4 @@
+Read each line from the file and push onto an array
+
+lines = []
+File.foreach("locations.txt") { |line| lines << line.chomp }
