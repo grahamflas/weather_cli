@@ -1,23 +1,25 @@
 require "pry"
   
 class WeatherCLI
+  attr_accessor :raw_locations, :locations
+
   def initialize
+    @raw_locations = []
     @locations = []
   end
 
   def run
     read_locations
-    #delete locations_array after you figure out what to do with each coordinate
-    locations_array = locations_to_lat_long_hash
+    locations = to_lat_long(raw_locations)
     binding.pry
   end
 
   def read_locations
-    File.foreach(ARGV.first) {|line| @locations << line.chomp }
+    File.foreach(ARGV.first) {|line| raw_locations << line.chomp }
   end
 
-  def locations_to_lat_long_hash
-    @locations.map do |location|
+  def to_lat_long(raw_locations)
+    raw_locations.map do |location|
       coordinates = location.split(",").each {|coordinate| coordinate.strip!}
 
       coordinates_hash = {}
@@ -29,12 +31,14 @@ class WeatherCLI
   end
 
   def clean_coordinates(coordinate)
-    clean_coordinate = coordinate[0..6]
+    non_digit_or_dec = coordinate.index(/[^\d|.]/)
+
+    clean_coordinate = coordinate[0...non_digit_or_dec]
     
     if coordinate.end_with?("S", "s", "W", "w")
       clean_coordinate.prepend("-") 
     end
-    
+
     clean_coordinate
   end
 
