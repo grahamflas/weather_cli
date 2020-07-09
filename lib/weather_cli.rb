@@ -13,8 +13,8 @@ class WeatherCLI
     read_locations
     self.locations = to_lat_long(raw_locations)
     add_grid_office_to_locations_hash
-    add_forecast_to_locations_hash
     binding.pry
+    add_forecast_to_locations_hash
   end
 
   def read_locations
@@ -65,7 +65,7 @@ class WeatherCLI
       )
       
       forecast_array.each {|el| el.transform_keys!(&:to_sym)}
-      
+
       location.merge({:forecast_details => forecast_array})
     end
   end
