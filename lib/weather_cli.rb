@@ -16,6 +16,7 @@ class WeatherCLI
     add_grid_office_to_locations_hash
     add_forecast_to_locations_hash
     get_wed_pm_forecasts
+    write_to_file
   end
 
   def read_locations
@@ -78,6 +79,12 @@ class WeatherCLI
         self.wed_pm_forecasts << f[:temperature]
       end
     end
+  end
+
+  def write_to_file
+    file = File.new("wednesday_night_weather.txt", 'w') 
+    File.open("wednesday_night_weather.txt", "w") { |f| f.write self.wed_pm_forecasts.join(", ") }
+    file.close
   end
 
 end
