@@ -3,7 +3,7 @@ require "rest-client"
 require "json"
 
 class WeatherApiWrapper
-  BASE_URL = "https://api.weather.gov/"
+  BASE_URL = "https://api.weather.gov"
 
   def get_grid(lat:, long:)
     response = RestClient.get("#{BASE_URL}/points/#{lat},#{long}")

@@ -1,11 +1,12 @@
 require "pry"
   
 class WeatherCLI
-  attr_accessor :raw_locations, :locations
+  attr_accessor :raw_locations, :locations, :wed_pm_forecasts
 
   def initialize
     @raw_locations = []
     @locations = []
+    @wed_pm_forecasts = []
     @api_wrapper = WeatherApiWrapper.new
   end
 
@@ -13,8 +14,8 @@ class WeatherCLI
     read_locations
     self.locations = to_lat_long(raw_locations)
     add_grid_office_to_locations_hash
-    binding.pry
     add_forecast_to_locations_hash
+    get_wed_pm_forecasts
   end
 
   def read_locations
@@ -67,6 +68,15 @@ class WeatherCLI
       forecast_array.each {|el| el.transform_keys!(&:to_sym)}
 
       location.merge({:forecast_details => forecast_array})
+    end
+  end
+
+  def get_wed_pm_forecasts
+    self.locations.each do |location|
+      location[:forecast_details].each do |f|
+        next unless f[:name] === "Wednesday Night"
+        self.wed_pm_forecasts << f[:temperature]
+      end
     end
   end
 
