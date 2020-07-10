@@ -4,24 +4,22 @@ Wednesday Weather
 Overview
 --------
 
----
 
 Wednesday Weather is a Ruby command line application that returns a text file containing comma-separated forecasted temperatures for Wednesday night for a given list of locations. 
 
 Forecasted temperatures are obtained using the [National Weather Service (NWS) API](https://www.weather.gov/documentation/services-web-api). 
 
-Geographic coordinates for provided locations should be stored in a local text file in decimal-degree format. Each location should be on a separate line: 
+Geographic coordinates for provided locations should be stored in a local text file in decimal-degree format. Each coordinates for each location should be on a separate line: 
 
 `​38.9072° N, 77.0369° W`
 
 Usage
 -----
 
----
 
-To use the application, run `​bin/wednesday_weather.rb`​ from the command line, providing the local text file containg a list of locations as an argument.
+To use the application, run `​bin/wednesday_weather.rb`​ from the command line, providing as an argument the local text file containing a coordinates for desired locations.
 
-For example, from this project’s directory, using the `​locations.txt`​ file saved in the project's top-level, please run:
+For example, from this project’s root, using the provided `​locations.txt`​ file, please run:
 
 ```sh
 ruby bin/wednesday_weather.rb locations.txt
@@ -30,7 +28,6 @@ ruby bin/wednesday_weather.rb locations.txt
 Required gems
 -------------
 
----
 
 Please ensure the following gems are installed:
 
