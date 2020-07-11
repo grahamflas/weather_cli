@@ -1,4 +1,4 @@
-require "pry"
+require 'pry'
   
 class WeatherCLI
   attr_accessor :locations, :output
@@ -11,19 +11,24 @@ class WeatherCLI
 
   def run
     read_locations
-    self.locations = to_lat_long
+    binding.pry
+    to_lat_long
+    binding.pry
     add_grid_office_to_locations_hash
+    binding.pry
     add_forecast_to_locations_hash
+    binding.pry
     get_output
+    binding.pry
     write_to_file
   end
 
   def read_locations
-    File.foreach(ARGV.first) {|line| self.locations << {provided_location: line.chomp} }
+    File.foreach(ARGV.first) { |line| locations << { provided_location: line.chomp } }
   end
 
   def to_lat_long
-    self.locations.map do |location|
+    locations.map! do |location|
       coordinates = location[:provided_location].split(",").each {|coordinate| coordinate.strip!}
 
       coordinates_hash = {}
@@ -39,17 +44,17 @@ class WeatherCLI
 
     clean_coordinate = coordinate[0...non_digit_or_dec]
     
-    if coordinate.end_with?("S", "s", "W", "w")
-      clean_coordinate.prepend("-") 
+    if coordinate.end_with?('S', 's', 'W', 'w')
+      clean_coordinate.prepend('-')
     end
 
     clean_coordinate
   end
 
   def add_grid_office_to_locations_hash
-    self.locations.map! do |location|
+    locations.map! do |location|
       office_and_grid_hash = @api_wrapper.get_grid(
-        lat: location[:lat], 
+        lat: location[:lat],
         long: location[:long],
       )
       
@@ -58,32 +63,32 @@ class WeatherCLI
   end
 
   def add_forecast_to_locations_hash
-    self.locations.map! do |location|
+    locations.map! do |location|
       forecast_array = @api_wrapper.get_forecast(
         gridId: location[:gridId],
         gridX: location[:gridX],
         gridY: location[:gridY],
       )
       
-      forecast_array.each {|el| el.transform_keys!(&:to_sym)}
+      forecast_array.each { |el| el.transform_keys!(&:to_sym) }
 
-      location.merge({:forecast_details => forecast_array})
+      location.merge({ forecast_details: forecast_array })
     end
   end
 
   def get_output
-    self.locations.each do |location|
+    locations.each do |location|
       location[:forecast_details].each do |f|
-        next unless f[:name] === "Wednesday Night"
-        self.output << f[:temperature]
+        next unless f[:name] == 'Wednesday Night'
+
+        output << f[:temperature]
       end
     end
   end
 
   def write_to_file
-    file = File.new("wednesday_night_weather.txt", 'w') 
-    File.open("wednesday_night_weather.txt", "w") { |f| f.write self.output.join(", ") }
+    file = File.new('wednesday_night_weather.txt', 'w')
+    File.open('wednesday_night_weather.txt', 'w') { |f| f.write output.join(', ') }
     file.close
   end
-
 end
