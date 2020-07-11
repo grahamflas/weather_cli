@@ -11,15 +11,10 @@ class WeatherCLI
 
   def run
     read_locations
-    binding.pry
     to_lat_long
-    binding.pry
     add_grid_office_to_locations_hash
-    binding.pry
     add_forecast_to_locations_hash
-    binding.pry
     get_output
-    binding.pry
     write_to_file
   end
 
