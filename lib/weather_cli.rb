@@ -1,37 +1,36 @@
 require "pry"
   
 class WeatherCLI
-  attr_accessor :raw_locations, :locations, :wed_pm_forecasts
+  attr_accessor :locations, :output
 
   def initialize
-    @raw_locations = []
     @locations = []
-    @wed_pm_forecasts = []
+    @output = []
     @api_wrapper = WeatherApiWrapper.new
   end
 
   def run
     read_locations
-    self.locations = to_lat_long(raw_locations)
+    self.locations = to_lat_long
     add_grid_office_to_locations_hash
     add_forecast_to_locations_hash
-    get_wed_pm_forecasts
+    get_output
     write_to_file
   end
 
   def read_locations
-    File.foreach(ARGV.first) {|line| self.raw_locations << line.chomp }
+    File.foreach(ARGV.first) {|line| self.locations << {provided_location: line.chomp} }
   end
 
-  def to_lat_long(raw_locations)
-    self.raw_locations.map do |location|
-      coordinates = location.split(",").each {|coordinate| coordinate.strip!}
+  def to_lat_long
+    self.locations.map do |location|
+      coordinates = location[:provided_location].split(",").each {|coordinate| coordinate.strip!}
 
       coordinates_hash = {}
       coordinates_hash[:lat] = clean_coordinates(coordinates.first)
       coordinates_hash[:long] = clean_coordinates(coordinates.last)
-  
-      coordinates_hash
+      
+      location.merge(coordinates_hash)
     end
   end
 
@@ -72,18 +71,18 @@ class WeatherCLI
     end
   end
 
-  def get_wed_pm_forecasts
+  def get_output
     self.locations.each do |location|
       location[:forecast_details].each do |f|
         next unless f[:name] === "Wednesday Night"
-        self.wed_pm_forecasts << f[:temperature]
+        self.output << f[:temperature]
       end
     end
   end
 
   def write_to_file
     file = File.new("wednesday_night_weather.txt", 'w') 
-    File.open("wednesday_night_weather.txt", "w") { |f| f.write self.wed_pm_forecasts.join(", ") }
+    File.open("wednesday_night_weather.txt", "w") { |f| f.write self.output.join(", ") }
     file.close
   end
 
