@@ -24,7 +24,7 @@ class WeatherCLI
 
   def to_lat_long
     locations.map! do |location|
-      coordinates = location[:provided_location].split(",").each {|coordinate| coordinate.strip!}
+      coordinates = location[:provided_location].split(",").each { |coordinate| coordinate.strip! }
 
       coordinates_hash = {}
       coordinates_hash[:lat] = clean_coordinates(coordinates.first)
@@ -38,11 +38,8 @@ class WeatherCLI
     non_digit_or_dec = coordinate.index(/[^\d|.]/)
 
     clean_coordinate = coordinate[0...non_digit_or_dec]
+    clean_coordinate.prepend('-') if coordinate.end_with?('S', 's', 'W', 'w')
     
-    if coordinate.end_with?('S', 's', 'W', 'w')
-      clean_coordinate.prepend('-')
-    end
-
     clean_coordinate
   end
 
